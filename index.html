@@ -1,249 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>our board</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f0f0f;
-    --surface: #1a1a1a;
-    --surface2: #242424;
-    --border: #2e2e2e;
-    --text: #f0f0f0;
-    --muted: #888;
-    --accent: #c8f135;
-    --accent-dim: rgba(200,241,53,0.12);
-    --note: #f5c542;
-    --link: #60b8ff;
-    --img: #a78bfa;
-    --radius: 10px;
-    --font: 'DM Sans', sans-serif;
-    --mono: 'DM Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    background: rgba(15,15,15,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 10;
-  }
-  .logo {
-    font-family: var(--mono);
-    font-size: 15px;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-  }
-  .live-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--muted);
-    font-family: var(--mono);
-  }
-  .live-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #22c55e;
-    animation: blink 2s infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  main {
-    max-width: 680px;
-    margin: 0 auto;
-    width: 100%;
-    padding: 1.5rem 1rem 4rem;
-    flex: 1;
-  }
-  .compose {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .name-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-    align-items: center;
-  }
-  .name-row input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    font-family: var(--font);
-    font-size: 13px;
-    padding: 6px 10px;
-    width: 160px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .name-row input:focus { border-color: var(--accent); }
-  .name-hint { font-size: 12px; color: var(--muted); }
-  .tabs {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-  .tab {
-    font-size: 12px;
-    font-family: var(--mono);
-    padding: 4px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .tab.active-note { background: rgba(245,197,66,0.15); color: var(--note); border-color: rgba(245,197,66,0.3); }
-  .tab.active-link { background: rgba(96,184,255,0.15); color: var(--link); border-color: rgba(96,184,255,0.3); }
-  .tab.active-image { background: rgba(167,139,250,0.15); color: var(--img); border-color: rgba(167,139,250,0.3); }
-  textarea, .compose input[type=text] {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    font-family: var(--font);
-    font-size: 14px;
-    padding: 8px 10px;
-    outline: none;
-    resize: vertical;
-    min-height: 72px;
-    line-height: 1.6;
-    transition: border-color 0.15s;
-  }
-  .compose input[type=text] { min-height: unset; resize: none; }
-  textarea:focus, .compose input[type=text]:focus { border-color: var(--accent); }
-  .post-btn {
-    margin-top: 10px;
-    background: var(--accent);
-    color: #0f0f0f;
-    border: none;
-    border-radius: 6px;
-    padding: 7px 18px;
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-  }
-  .post-btn:hover { opacity: 0.88; }
-  .post-btn:active { transform: scale(0.97); }
-  .posts { display: flex; flex-direction: column; gap: 10px; }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.9rem 1rem;
-    animation: fadeIn 0.2s ease;
-  }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-  .card-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 7px;
-  }
-  .avatar {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 600;
-    flex-shrink: 0;
-    font-family: var(--mono);
-  }
-  .card-name { font-size: 13px; font-weight: 500; }
-  .badge {
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 20px;
-    text-transform: lowercase;
-  }
-  .badge-note { background: rgba(245,197,66,0.15); color: var(--note); }
-  .badge-link { background: rgba(96,184,255,0.15); color: var(--link); }
-  .badge-image { background: rgba(167,139,250,0.15); color: var(--img); }
-  .card-time { font-size: 11px; color: var(--muted); margin-left: auto; font-family: var(--mono); }
-  .del-btn {
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 15px;
-    padding: 0 2px;
-    line-height: 1;
-    transition: color 0.15s;
-  }
-  .del-btn:hover { color: #f87171; }
-  .card-body { font-size: 14px; line-height: 1.65; color: #d4d4d4; word-break: break-word; white-space: pre-wrap; }
-  .card-body a { color: var(--link); text-decoration: none; }
-  .card-body a:hover { text-decoration: underline; }
-  .card-img { max-width: 100%; border-radius: 6px; margin-top: 8px; display: block; max-height: 240px; object-fit: cover; }
-  .empty { text-align: center; color: var(--muted); font-size: 14px; padding: 3rem 0; font-family: var(--mono); }
-  .setup-banner {
-    background: rgba(200,241,53,0.08);
-    border: 1px solid rgba(200,241,53,0.25);
-    border-radius: var(--radius);
-    padding: 1rem 1.1rem;
-    margin-bottom: 1.5rem;
-    font-size: 13px;
-    line-height: 1.7;
-    color: #ccc;
-  }
-  .setup-banner code {
-    background: var(--surface2);
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--accent);
-  }
-  .setup-banner a { color: var(--link); }
-  .setup-banner strong { color: var(--text); }
-  .extra-input { margin-top: 8px; }
+:root {
+  --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #242424; --border: #2e2e2e;
+  --text: #f0f0f0; --muted: #888; --accent: #c8f135;
+  --note: #f5c542; --link: #60b8ff; --img: #a78bfa; --file: #4ade80;
+  --danger: #f87171; --radius: 10px;
+  --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+}
+[data-theme="light"] {
+  --bg: #f5f5f0; --surface: #ffffff; --surface2: #f0f0eb; --border: #ddd;
+  --text: #111; --muted: #777;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.2s, color 0.2s; }
+header {
+  border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--bg);
+  backdrop-filter: blur(12px); z-index: 100;
+}
+.logo-wrap { display: flex; align-items: center; gap: 10px; }
+.logo { font-family: var(--mono); font-size: 15px; color: var(--accent); cursor: pointer; border-bottom: 1px dashed transparent; transition: border-color 0.15s; }
+.logo:hover { border-color: var(--accent); }
+.logo-edit { display: none; font-family: var(--mono); font-size: 15px; color: var(--accent); background: transparent; border: none; border-bottom: 1px solid var(--accent); outline: none; width: 160px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.live-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.icon-btn { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer; padding: 5px 8px; font-size: 15px; transition: all 0.15s; }
+.icon-btn:hover { border-color: var(--text); color: var(--text); }
+.notif-dot { position: relative; }
+.notif-dot::after { content: ''; position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: none; }
+.notif-dot.has-notif::after { display: block; }
+main { max-width: 700px; margin: 0 auto; width: 100%; padding: 1.25rem 1rem 4rem; flex: 1; }
+.search-bar { display: flex; gap: 8px; margin-bottom: 1rem; }
+.search-bar input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--font); font-size: 14px; padding: 8px 12px; outline: none; transition: border-color 0.15s; }
+.search-bar input:focus { border-color: var(--accent); }
+.compose { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.25rem; }
+.name-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+.name-row input { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font); font-size: 13px; padding: 6px 10px; width: 160px; outline: none; transition: border-color 0.15s; }
+.name-row input:focus { border-color: var(--accent); }
+.name-hint { font-size: 12px; color: var(--muted); }
+.tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.tab { font-size: 12px; font-family: var(--mono); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.tab.active-note  { background: rgba(245,197,66,0.15); color: var(--note); border-color: rgba(245,197,66,0.3); }
+.tab.active-link  { background: rgba(96,184,255,0.15); color: var(--link); border-color: rgba(96,184,255,0.3); }
+.tab.active-image { background: rgba(167,139,250,0.15); color: var(--img); border-color: rgba(167,139,250,0.3); }
+textarea, .compose input[type=text] {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-family: var(--font); font-size: 14px;
+  padding: 8px 10px; outline: none; resize: vertical; min-height: 72px;
+  line-height: 1.6; transition: border-color 0.15s;
+}
+.compose input[type=text] { min-height: unset; resize: none; }
+textarea:focus, .compose input[type=text]:focus { border-color: var(--accent); }
+.post-btn { margin-top: 10px; background: var(--accent); color: #0f0f0f; border: none; border-radius: 6px; padding: 7px 18px; font-family: var(--mono); font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+.post-btn:hover { opacity: 0.88; }
+.post-btn:active { transform: scale(0.97); }
+.posts { display: flex; flex-direction: column; gap: 10px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.9rem 1rem; animation: fadeIn 0.2s ease; }
+.card.pinned { border-color: var(--accent); border-width: 1.5px; }
+.pin-label { font-family: var(--mono); font-size: 10px; color: var(--accent); margin-bottom: 6px; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
+.avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; font-family: var(--mono); }
+.card-name { font-size: 13px; font-weight: 500; }
+.badge { font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 20px; }
+.badge-note  { background: rgba(245,197,66,0.15); color: var(--note); }
+.badge-link  { background: rgba(96,184,255,0.15); color: var(--link); }
+.badge-image { background: rgba(167,139,250,0.15); color: var(--img); }
+.card-time { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.card-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+.act-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px; padding: 2px 4px; border-radius: 4px; transition: color 0.15s, background 0.15s; line-height: 1; }
+.act-btn:hover { color: var(--text); background: var(--surface2); }
+.act-btn.pinned { color: var(--accent); }
+.card-body { font-size: 14px; line-height: 1.65; color: var(--text); word-break: break-word; white-space: pre-wrap; opacity: 0.88; }
+.card-body a { color: var(--link); text-decoration: none; }
+.card-body a:hover { text-decoration: underline; }
+.card-img { max-width: 100%; border-radius: 6px; margin-top: 8px; display: block; max-height: 260px; object-fit: cover; }
+.reactions-bar { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+.reaction-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 9px; font-size: 13px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 4px; color: var(--text); }
+.reaction-btn:hover { border-color: var(--muted); }
+.reaction-btn.reacted { border-color: var(--accent); background: rgba(200,241,53,0.1); }
+.reaction-count { font-size: 11px; font-family: var(--mono); color: var(--muted); }
+.add-reaction { background: none; border: 1px dashed var(--border); border-radius: 20px; padding: 3px 9px; font-size: 13px; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+.add-reaction:hover { border-color: var(--muted); color: var(--text); }
+.emoji-picker { position: absolute; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px; display: flex; gap: 6px; flex-wrap: wrap; width: 200px; z-index: 200; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.emoji-picker button { background: none; border: none; font-size: 18px; cursor: pointer; padding: 2px; border-radius: 4px; transition: background 0.1s; }
+.emoji-picker button:hover { background: var(--surface2); }
+.comments-section { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+.comment { display: flex; gap: 8px; margin-bottom: 8px; align-items: flex-start; }
+.comment-avatar { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; flex-shrink: 0; font-family: var(--mono); }
+.comment-content { flex: 1; }
+.comment-name { font-size: 11px; font-weight: 500; color: var(--muted); }
+.comment-text { font-size: 13px; line-height: 1.5; color: var(--text); opacity: 0.85; white-space: pre-wrap; word-break: break-word; }
+.comment-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 11px; padding: 0 2px; transition: color 0.15s; }
+.comment-del:hover { color: var(--danger); }
+.comment-form { display: flex; gap: 6px; margin-top: 6px; }
+.comment-form input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font); font-size: 12px; padding: 5px 8px; outline: none; transition: border-color 0.15s; }
+.comment-form input:focus { border-color: var(--accent); }
+.comment-form button { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: 12px; padding: 5px 10px; cursor: pointer; font-family: var(--mono); transition: all 0.15s; }
+.comment-form button:hover { color: var(--text); border-color: var(--muted); }
+.toggle-comments { background: none; border: none; color: var(--muted); font-size: 12px; cursor: pointer; font-family: var(--mono); padding: 0; margin-top: 8px; transition: color 0.15s; }
+.toggle-comments:hover { color: var(--text); }
+.empty { text-align: center; color: var(--muted); font-size: 14px; padding: 3rem 0; font-family: var(--mono); }
+.extra-input { margin-top: 8px; }
+.notif-toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--surface); border: 1px solid var(--accent); border-radius: 8px; padding: 10px 16px; font-size: 13px; font-family: var(--mono); color: var(--accent); z-index: 999; animation: slideUp 0.2s ease; max-width: 280px; }
+@keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+.section-label { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.05em; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">// our board</div>
-  <div class="live-badge"><div class="live-dot"></div> live</div>
+  <div class="logo-wrap">
+    <span class="logo" id="logo-text" onclick="startEditName()" title="click to rename">// our board</span>
+    <input class="logo-edit" id="logo-edit" onblur="saveName()" onkeydown="if(event.key==='Enter')saveName()" maxlength="30" />
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div> live</div>
+    <button class="icon-btn notif-dot" id="notif-btn" onclick="clearNotif()" title="notifications">🔔</button>
+    <button class="icon-btn" onclick="toggleTheme()" title="toggle theme" id="theme-btn">🌙</button>
+  </div>
 </header>
 
 <main>
-
-  <div class="setup-banner" id="setup-banner">
-    <strong>⚡ one-time setup needed</strong><br>
-    This board uses Firebase for real-time sync. It takes about 3 minutes:<br><br>
-    1. Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → create a project (any name)<br>
-    2. Click <strong>Realtime Database</strong> → Create database → Start in <strong>test mode</strong><br>
-    3. Go to <strong>Project Settings → Your apps → Web</strong> → Register app → copy the config<br>
-    4. Replace the <code>firebaseConfig</code> object near the bottom of this file with your config<br>
-    5. Save &amp; re-upload — you're done! Share the link with friends 🎉<br><br>
-    <em>Until then, posts only show for you in this tab (no real-time sync).</em>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="search posts..." oninput="renderPosts()" />
   </div>
 
   <div class="compose">
@@ -262,17 +151,16 @@
     <button class="post-btn" onclick="postItem()">post →</button>
   </div>
 
+  <div class="section-label" id="posts-label">all posts</div>
   <div id="posts" class="posts">
-    <div class="empty">no posts yet</div>
+    <div class="empty">loading...</div>
   </div>
-
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, remove, update, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ── REPLACE THIS WITH YOUR FIREBASE CONFIG ──────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyDNi4UYpQtjqSp5-v-1i0hFVUINV2_Qh9A",
   authDomain: "board-f23b8.firebaseapp.com",
@@ -283,144 +171,280 @@ const firebaseConfig = {
   appId: "1:1085038413010:web:87af7ce8ff439221e3990b",
   measurementId: "G-FXCJHGSKWP"
 };
-// ─────────────────────────────────────────────────────────────────────────────
 
-let db = null;
-let postsRef = null;
-let configured = false;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const postsRef = ref(db, 'posts');
+const metaRef = ref(db, 'meta');
 
-try {
-  if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
-    const app = initializeApp(firebaseConfig);
-    db = getDatabase(app);
-    postsRef = ref(db, 'posts');
-    configured = true;
-    document.getElementById('setup-banner').style.display = 'none';
-  }
-} catch(e) {
-  console.warn('Firebase not configured:', e);
-}
-
+const EMOJIS = ['👍','❤️','😂','🔥','😮','😢','🎉','💯'];
 const COLORS = [
   ['#f5c542','#3a2e00'],['#60b8ff','#002a4a'],['#a78bfa','#2e1a5e'],
   ['#4ade80','#003a18'],['#fb923c','#3a1500'],['#f472b6','#3a0028']
 ];
 function nameColor(name) {
-  let h = 0;
-  for (const c of name) h = (h * 31 + c.charCodeAt(0)) % COLORS.length;
-  return COLORS[Math.abs(h) % COLORS.length];
+  let h = 0; for (const c of (name||'')) h = (h*31+c.charCodeAt(0))%COLORS.length;
+  return COLORS[Math.abs(h)%COLORS.length];
 }
-function initials(name) {
-  return name.trim().split(/\s+/).map(w => w[0].toUpperCase()).slice(0,2).join('') || '?';
-}
+function initials(name) { return (name||'?').trim().split(/\s+/).map(w=>w[0].toUpperCase()).slice(0,2).join('')||'?'; }
 function timeAgo(ts) {
-  const d = Date.now() - ts;
-  if (d < 60000) return 'just now';
-  if (d < 3600000) return Math.floor(d/60000) + 'm ago';
-  if (d < 86400000) return Math.floor(d/3600000) + 'h ago';
+  const d = Date.now()-ts;
+  if(d<60000) return 'just now';
+  if(d<3600000) return Math.floor(d/60000)+'m ago';
+  if(d<86400000) return Math.floor(d/3600000)+'h ago';
   return new Date(ts).toLocaleDateString();
 }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function ea(s){ return String(s||'').replace(/"/g,'&quot;'); }
 
+// theme
+let theme = localStorage.getItem('theme')||'dark';
+document.documentElement.setAttribute('data-theme', theme);
+document.getElementById('theme-btn').textContent = theme==='dark'?'🌙':'☀️';
+window.toggleTheme = function() {
+  theme = theme==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  document.getElementById('theme-btn').textContent = theme==='dark'?'🌙':'☀️';
+};
+
+// board name
+window.startEditName = function() {
+  const t = document.getElementById('logo-text');
+  const e = document.getElementById('logo-edit');
+  e.value = t.textContent.replace('// ','');
+  t.style.display='none'; e.style.display='inline-block'; e.focus();
+};
+window.saveName = function() {
+  const e = document.getElementById('logo-edit');
+  const t = document.getElementById('logo-text');
+  const name = e.value.trim() || 'our board';
+  t.textContent = '// ' + name;
+  t.style.display='inline'; e.style.display='none';
+  set(metaRef, { boardName: name });
+};
+onValue(metaRef, snap => {
+  const v = snap.val();
+  if(v && v.boardName) {
+    document.getElementById('logo-text').textContent = '// ' + v.boardName;
+    document.title = v.boardName;
+  }
+});
+
+// notifications
+let lastCount = null;
+let focused = true;
+document.addEventListener('visibilitychange', ()=>{ focused = !document.hidden; if(focused) clearNotif(); });
+window.clearNotif = function() {
+  document.getElementById('notif-btn').classList.remove('has-notif');
+};
+function showToast(msg) {
+  const old = document.querySelector('.notif-toast');
+  if(old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'notif-toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+// tab
 let currentTab = 'note';
 window.setTab = function(tab) {
   currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => {
-    t.className = 'tab';
-    if (t.dataset.tab === tab) t.classList.add('active-' + tab);
-  });
+  document.querySelectorAll('.tab').forEach(t=>{ t.className='tab'; if(t.dataset.tab===tab) t.classList.add('active-'+tab); });
   const area = document.getElementById('compose-area');
-  if (tab === 'note') {
-    area.innerHTML = '<textarea id="main-input" placeholder="write something..."></textarea>';
-  } else if (tab === 'link') {
-    area.innerHTML = '<input type="text" id="main-input" placeholder="https://..." /><input type="text" id="extra-input" class="extra-input" placeholder="description (optional)" />';
-  } else {
-    area.innerHTML = '<input type="text" id="main-input" placeholder="image URL (https://...)" /><input type="text" id="extra-input" class="extra-input" placeholder="caption (optional)" />';
-  }
+  if(tab==='note') area.innerHTML='<textarea id="main-input" placeholder="write something..."></textarea>';
+  else if(tab==='link') area.innerHTML='<input type="text" id="main-input" placeholder="https://..." /><input type="text" id="extra-input" class="extra-input" placeholder="description (optional)" />';
+  else area.innerHTML='<input type="text" id="main-input" placeholder="image URL (https://...)" /><input type="text" id="extra-input" class="extra-input" placeholder="caption (optional)" />';
 };
-
-// fallback local posts
-let localPosts = [];
 
 window.postItem = async function() {
-  const name = (document.getElementById('username').value || '').trim() || 'anon';
-  const main = (document.getElementById('main-input').value || '').trim();
-  const extra = (document.getElementById('extra-input') || {value:''}).value?.trim() || '';
-  if (!main) return;
-
+  const name = (document.getElementById('username').value||'').trim()||'anon';
+  const main = (document.getElementById('main-input')?.value||'').trim();
+  const extra = (document.getElementById('extra-input')?.value||'').trim();
+  if(!main) return;
   const data = { name, ts: Date.now(), type: currentTab };
-  if (currentTab === 'note') data.content = main;
-  else if (currentTab === 'link') { data.url = main; data.label = extra; }
-  else { data.url = main; data.caption = extra; }
-
-  document.getElementById('main-input').value = '';
-  if (document.getElementById('extra-input')) document.getElementById('extra-input').value = '';
-
-  if (configured && postsRef) {
-    await push(postsRef, data);
-  } else {
-    data.id = 'local_' + Date.now();
-    localPosts.unshift(data);
-    renderLocal();
-  }
+  if(currentTab==='note') data.content=main;
+  else if(currentTab==='link'){data.url=main;data.label=extra;}
+  else{data.url=main;data.caption=extra;}
+  document.getElementById('main-input').value='';
+  if(document.getElementById('extra-input')) document.getElementById('extra-input').value='';
+  await push(postsRef, data);
 };
 
-function renderPost(p, key) {
-  const [bg, fg] = nameColor(p.name || '?');
-  const card = document.createElement('div');
-  card.className = 'card';
-  let body = '';
-  if (p.type === 'note') {
-    body = `<div class="card-body">${esc(p.content)}</div>`;
-  } else if (p.type === 'link') {
-    body = `<div class="card-body"><a href="${escAttr(p.url)}" target="_blank" rel="noopener">${esc(p.label || p.url)}</a></div>`;
+// reactions
+window.addReaction = async function(postKey, emoji) {
+  closeEmojiPicker();
+  const myName = (document.getElementById('username').value||'').trim()||'anon';
+  const rRef = ref(db, `posts/${postKey}/reactions/${emoji}`);
+  onValue(rRef, snap => {
+    const val = snap.val()||{};
+    const names = Object.values(val);
+    if(names.includes(myName)) {
+      const myKey = Object.keys(val).find(k=>val[k]===myName);
+      if(myKey) remove(ref(db, `posts/${postKey}/reactions/${emoji}/${myKey}`));
+    } else {
+      push(ref(db, `posts/${postKey}/reactions/${emoji}`), myName);
+    }
+  }, {onlyOnce: true});
+};
+
+let openPicker = null;
+function closeEmojiPicker() { if(openPicker){openPicker.remove();openPicker=null;} }
+document.addEventListener('click', e=>{ if(openPicker && !openPicker.contains(e.target)) closeEmojiPicker(); });
+
+window.showEmojiPicker = function(postKey, btn) {
+  closeEmojiPicker();
+  const picker = document.createElement('div');
+  picker.className = 'emoji-picker';
+  EMOJIS.forEach(emoji => {
+    const b = document.createElement('button');
+    b.textContent = emoji;
+    b.onclick = (e)=>{ e.stopPropagation(); addReaction(postKey, emoji); };
+    picker.appendChild(b);
+  });
+  btn.parentElement.style.position='relative';
+  btn.parentElement.appendChild(picker);
+  openPicker = picker;
+};
+
+// comments
+window.toggleComments = function(postKey) {
+  const sec = document.getElementById('comments-'+postKey);
+  if(!sec) return;
+  sec.style.display = sec.style.display==='none' ? 'block' : 'none';
+  const btn = document.getElementById('toggle-btn-'+postKey);
+  if(btn) btn.textContent = sec.style.display==='none' ? 'show comments' : 'hide comments';
+};
+
+window.postComment = async function(postKey) {
+  const name = (document.getElementById('username').value||'').trim()||'anon';
+  const input = document.getElementById('comment-input-'+postKey);
+  const text = (input?.value||'').trim();
+  if(!text) return;
+  await push(ref(db, `posts/${postKey}/comments`), { name, text, ts: Date.now() });
+  input.value='';
+};
+
+window.deleteComment = async function(postKey, commentKey) {
+  await remove(ref(db, `posts/${postKey}/comments/${commentKey}`));
+};
+
+// pin
+window.togglePin = async function(postKey, currentlyPinned) {
+  await update(ref(db, `posts/${postKey}`), { pinned: !currentlyPinned });
+};
+
+// delete
+window.deletePost = async function(postKey) {
+  await remove(ref(db, 'posts/'+postKey));
+};
+
+// render
+let allPosts = [];
+function renderPosts() {
+  const query = (document.getElementById('search-input')?.value||'').toLowerCase().trim();
+  const container = document.getElementById('posts');
+  let posts = [...allPosts];
+  if(query) {
+    posts = posts.filter(([,p])=>{
+      const text = [p.name,p.content,p.label,p.url,p.caption].filter(Boolean).join(' ').toLowerCase();
+      return text.includes(query);
+    });
+    document.getElementById('posts-label').textContent = posts.length + ' result' + (posts.length!==1?'s':'');
   } else {
-    body = `<div class="card-body">${p.caption ? esc(p.caption) + '<br>' : ''}<img src="${escAttr(p.url)}" class="card-img" alt="${escAttr(p.caption||'image')}" onerror="this.style.display='none'"></div>`;
+    document.getElementById('posts-label').textContent = 'all posts';
   }
+  // pinned first
+  posts.sort((a,b)=>{
+    if(b[1].pinned && !a[1].pinned) return 1;
+    if(a[1].pinned && !b[1].pinned) return -1;
+    return b[1].ts - a[1].ts;
+  });
+  if(posts.length===0){ container.innerHTML='<div class="empty">'+(query?'no results':'no posts yet — say hi!')+'</div>'; return; }
+  container.innerHTML='';
+  for(const [key,post] of posts) container.appendChild(renderPost(post,key));
+}
+
+function renderPost(p, key) {
+  const [bg,fg] = nameColor(p.name||'?');
+  const card = document.createElement('div');
+  card.className = 'card' + (p.pinned?' pinned':'');
+
+  let body='';
+  if(p.type==='note') body=`<div class="card-body">${esc(p.content)}</div>`;
+  else if(p.type==='link') body=`<div class="card-body"><a href="${ea(p.url)}" target="_blank" rel="noopener">${esc(p.label||p.url)}</a></div>`;
+  else body=`<div class="card-body">${p.caption?esc(p.caption)+'<br>':''}<img src="${ea(p.url)}" class="card-img" alt="${ea(p.caption||'image')}" onerror="this.style.display='none'"></div>`;
+
+  // reactions
+  const reactions = p.reactions||{};
+  let reactionHtml = '<div class="reactions-bar">';
+  for(const [emoji, users] of Object.entries(reactions)) {
+    const count = Object.keys(users).length;
+    if(count===0) continue;
+    const myName = (document.getElementById('username')?.value||'').trim()||'anon';
+    const reacted = Object.values(users).includes(myName);
+    reactionHtml += `<button class="reaction-btn${reacted?' reacted':''}" onclick="addReaction('${key}','${emoji}')">${emoji} <span class="reaction-count">${count}</span></button>`;
+  }
+  reactionHtml += `<button class="add-reaction" onclick="showEmojiPicker('${key}',this)">+ react</button></div>`;
+
+  // comments
+  const comments = p.comments||{};
+  const commentEntries = Object.entries(comments).sort((a,b)=>a[1].ts-b[1].ts);
+  const commentCount = commentEntries.length;
+  let commentsHtml = `<button class="toggle-comments" id="toggle-btn-${key}" onclick="toggleComments('${key}')">${commentCount>0?commentCount+' comment'+(commentCount!==1?'s':''):'add comment'}</button>
+  <div class="comments-section" id="comments-${key}" style="display:none">`;
+  for(const [ck,c] of commentEntries) {
+    const [cbg,cfg] = nameColor(c.name||'?');
+    commentsHtml += `<div class="comment">
+      <div class="comment-avatar" style="background:${cbg};color:${cfg}">${initials(c.name)}</div>
+      <div class="comment-content">
+        <span class="comment-name">${esc(c.name)}</span>
+        <div class="comment-text">${esc(c.text)}</div>
+      </div>
+      <button class="comment-del" onclick="deleteComment('${key}','${ck}')">✕</button>
+    </div>`;
+  }
+  commentsHtml += `<div class="comment-form">
+    <input type="text" id="comment-input-${key}" placeholder="write a comment..." onkeydown="if(event.key==='Enter')postComment('${key}')" />
+    <button onclick="postComment('${key}')">send</button>
+  </div></div>`;
+
   card.innerHTML = `
+    ${p.pinned?'<div class="pin-label">📌 pinned</div>':''}
     <div class="card-meta">
       <div class="avatar" style="background:${bg};color:${fg}">${initials(p.name||'?')}</div>
       <span class="card-name">${esc(p.name||'anon')}</span>
       <span class="badge badge-${p.type}">${p.type}</span>
       <span class="card-time">${timeAgo(p.ts)}</span>
-      <button class="del-btn" onclick="deletePost('${key}')" title="delete">✕</button>
+      <div class="card-actions">
+        <button class="act-btn${p.pinned?' pinned':''}" onclick="togglePin('${key}',${!!p.pinned})" title="${p.pinned?'unpin':'pin'}">📌</button>
+        <button class="act-btn" onclick="deletePost('${key}')" title="delete">✕</button>
+      </div>
     </div>
     ${body}
+    ${reactionHtml}
+    ${commentsHtml}
   `;
   return card;
 }
 
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function escAttr(s){ return String(s||'').replace(/"/g,'&quot;'); }
-
-window.deletePost = async function(key) {
-  if (configured && db && !key.startsWith('local_')) {
-    await remove(ref(db, 'posts/' + key));
-  } else {
-    localPosts = localPosts.filter(p => p.id !== key);
-    renderLocal();
+onValue(postsRef, snap => {
+  const val = snap.val();
+  const newPosts = val ? Object.entries(val) : [];
+  // notifications
+  if(lastCount !== null && newPosts.length > lastCount && document.hidden) {
+    document.getElementById('notif-btn').classList.add('has-notif');
   }
-};
-
-function renderLocal() {
-  const container = document.getElementById('posts');
-  if (localPosts.length === 0) {
-    container.innerHTML = '<div class="empty">no posts yet</div>';
-    return;
+  if(lastCount !== null && newPosts.length > lastCount && !document.hidden) {
+    const newest = newPosts.sort((a,b)=>b[1].ts-a[1].ts)[0];
+    if(newest) showToast('📬 ' + (newest[1].name||'someone') + ' posted something');
   }
-  container.innerHTML = '';
-  for (const p of localPosts) container.appendChild(renderPost(p, p.id));
-}
-
-if (configured && postsRef) {
-  onValue(postsRef, snap => {
-    const container = document.getElementById('posts');
-    const val = snap.val();
-    if (!val) { container.innerHTML = '<div class="empty">no posts yet — say hi!</div>'; return; }
-    const entries = Object.entries(val).sort((a,b) => b[1].ts - a[1].ts);
-    container.innerHTML = '';
-    for (const [key, post] of entries) container.appendChild(renderPost(post, key));
-  });
-}
+  lastCount = newPosts.length;
+  allPosts = newPosts;
+  renderPosts();
+});
 </script>
 </body>
 </html>
