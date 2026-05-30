@@ -13,7 +13,7 @@
   --danger: #f87171; --radius: 10px;
   --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
 }
-[data-theme="light"] { --bg: #f5f5f0; --surface: #ffffff; --surface2: #f0f0eb; --border: #ddd; --text: #111; --muted: #777; }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.2s, color 0.2s; }
 
@@ -193,7 +193,7 @@ textarea:focus, .compose input[type=text]:focus { border-color: var(--accent); }
     <span class="online-count" id="online-count">● 1 online</span>
     <div class="live-badge"><div class="live-dot"></div> live</div>
     <button class="icon-btn notif-dot" id="notif-btn" onclick="clearNotif()" title="notifications">🔔</button>
-    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+    
   </div>
 </header>
 
@@ -325,10 +325,8 @@ function watchTyping(){
 }
 
 // theme
-let theme=localStorage.getItem('theme')||'dark';
-document.documentElement.setAttribute('data-theme',theme);
-document.getElementById('theme-btn').textContent=theme==='dark'?'🌙':'☀️';
-window.toggleTheme=function(){ theme=theme==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',theme); localStorage.setItem('theme',theme); document.getElementById('theme-btn').textContent=theme==='dark'?'🌙':'☀️'; };
+
+
 
 // board name
 window.startEditName=function(){ const t=document.getElementById('logo-text'),e=document.getElementById('logo-edit'); e.value=t.textContent.replace('// ',''); t.style.display='none'; e.style.display='inline-block'; e.focus(); };
