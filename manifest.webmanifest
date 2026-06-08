@@ -1,0 +1,15 @@
+{
+  "name": "CookiePot",
+  "short_name": "CookiePot",
+  "description": "Track income, expenses and budgets. All data stays on your device.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#c5efd8",
+  "theme_color": "#c5efd8",
+  "icons": [
+    { "src": "icon192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
