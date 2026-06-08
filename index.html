@@ -219,10 +219,10 @@ canvas { display:block; width:100%; }
       </div>
 
       <div class="actions">
-        <button class="action send" data-add="expense"><span class="ic">↗</span>Send</button>
-        <button class="action receive" data-add="income"><span class="ic">↙</span>Receive</button>
-        <button class="action swap" data-add="expense"><span class="ic">⇄</span>Swap</button>
-        <button class="action deposit" data-add="income"><span class="ic">+</span>Deposit</button>
+        <button class="action send" data-add="expense"><span class="ic">↗</span>Expense</button>
+        <button class="action receive" data-add="income"><span class="ic">↙</span>Income</button>
+        <button class="action swap" data-nav="budget"><span class="ic">◐</span>Budget</button>
+        <button class="action deposit" data-nav="analytics"><span class="ic">☰</span>History</button>
       </div>
 
       <div class="section-h">Recent Transaction</div>
@@ -329,7 +329,7 @@ canvas { display:block; width:100%; }
         <button class="set-btn danger" id="clear-btn">🗑 Clear everything</button>
         <input type="file" id="import-file" accept="application/json" style="display:none">
       </div>
-      <div class="muted" style="text-align:center; font-size:12px; margin-top:8px">ledger · data stays on this device</div>
+      <div class="muted" style="text-align:center; font-size:12px; margin-top:8px">CookiePot · data stays on this device</div>
     </section>
 
   </div><!-- /scroll -->
@@ -353,7 +353,7 @@ canvas { display:block; width:100%; }
       <button data-type="income">+ Income</button>
     </div>
     <div class="field amt-field"><label>Amount</label><span class="cur">$</span><input type="number" id="f-amount" placeholder="0.00" step="0.01" min="0" inputmode="decimal"></div>
-    <div class="field"><label>Description</label><input type="text" id="f-desc" placeholder="e.g. From Ahmad Mughal" maxlength="60"></div>
+    <div class="field"><label>Description</label><input type="text" id="f-desc" placeholder="e.g. Grocery shopping" maxlength="60"></div>
     <div class="field"><label>Category</label><select id="f-category"></select></div>
     <div class="field"><label>Date</label><input type="date" id="f-date"></div>
     <div class="sheet-actions">
@@ -718,16 +718,16 @@ function seedSample(){
   const S=[
     ["expense",18,"Morning coffee","food",today],
     ["expense",32,"Lunch","food",today],
-    ["income",3456,"From Ahmad Mughal","transfer",md(1)],
+    ["income",3456,"Bank transfer","transfer",md(1)],
     ["income",5000,"Monthly paycheck","salary",md(1)],
-    ["expense",1396,"To Sara Gujjar","transfer",md(2)],
-    ["expense",500,"To Mailchimp","shopping",md(3)],
+    ["expense",1396,"Rent payment","rent",md(2)],
+    ["expense",500,"Online subscription","shopping",md(3)],
     ["expense",300,"Weekly grocery","grocery",d(4)],
-    ["expense",250,"New sneakers","shopping",d(4)],
-    ["expense",150,"To Sara Gujjar","transfer",d(4)],
-    ["expense",53,"Ahmad Mughal","transfer",d(4)],
-    ["expense",45,"Netflix","shopping",d(4)],
-    ["expense",20,"Foodpanda","food",d(4)],
+    ["expense",250,"New shoes","shopping",d(4)],
+    ["expense",150,"Money transfer","transfer",d(4)],
+    ["expense",53,"Taxi ride","transport",d(4)],
+    ["expense",45,"Streaming subscription","fun",d(4)],
+    ["expense",20,"Food delivery","food",d(4)],
     ["expense",120,"Groceries","grocery",d(0)],
     ["expense",80,"Fuel","transport",d(1)],
     ["expense",210,"Dinner out","food",d(2)],
