@@ -77,6 +77,19 @@ body { background:var(--page); font-family:var(--font); color:var(--text); displ
 
 .section-h { font-size:18px; font-weight:600; margin-bottom:14px; }
 
+/* this-month summary */
+.ms-title { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:10px; }
+.month-summary { display:flex; gap:10px; margin-bottom:28px; }
+.ms-item { flex:1; background:var(--surface2); border-radius:16px; padding:13px 8px; text-align:center; }
+.ms-lbl { font-size:11px; color:var(--muted); margin-bottom:5px; }
+.ms-val { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+.ms-val.in { color:var(--income); }
+.ms-val.out { color:var(--expense); }
+
+/* transaction search */
+.tx-search { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:11px 13px; font-family:var(--font); font-size:14px; color:var(--text); outline:none; margin-bottom:8px; }
+.tx-search:focus { border-color:var(--accent); }
+
 /* transaction rows */
 .tx { display:flex; align-items:center; gap:13px; padding:11px 0; cursor:pointer; }
 .tx-ic { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
@@ -98,6 +111,11 @@ body { background:var(--page); font-family:var(--font); color:var(--text); displ
 .bud-hero .h-sub { font-size:13px; opacity:.9; position:relative; z-index:1; }
 .bud-hero .h-bar { height:8px; background:rgba(255,255,255,.25); border-radius:6px; overflow:hidden; margin-top:16px; position:relative; z-index:1; }
 .bud-hero .h-bar > div { height:100%; background:#fff; border-radius:6px; transition:width .3s; }
+.hero-input { background:rgba(255,255,255,.22); border-color:transparent; }
+.hero-input .c { color:rgba(255,255,255,.85); }
+.hero-input input { color:#fff; width:60px; }
+.hero-input input::placeholder { color:rgba(255,255,255,.7); }
+.hero-input:focus-within { border-color:#fff; }
 
 .bud-block { border:1px solid var(--border); border-radius:18px; padding:16px 18px; margin-bottom:14px; }
 .bud-block .b-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:11px; }
@@ -113,6 +131,9 @@ body { background:var(--page); font-family:var(--font); color:var(--text); displ
 .b-meta .over { color:var(--expense); font-weight:600; }
 .cat-icon { width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; }
 .sub-h { font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin:24px 0 12px; }
+.mini-btn { background:var(--accent-soft); border:none; color:var(--accent); border-radius:14px; padding:7px 13px; font-family:var(--font); font-size:13px; font-weight:600; cursor:pointer; }
+.jar-cookies { font-size:16px; letter-spacing:3px; margin-top:9px; line-height:1; }
+.jar-cookies .dot { opacity:.25; }
 
 /* ================= ANALYTICS ================= */
 .chips { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:22px; }
@@ -225,7 +246,15 @@ canvas { display:block; width:100%; }
         <button class="action deposit" data-nav="analytics"><span class="ic">☰</span>History</button>
       </div>
 
-      <div class="section-h">Recent Transaction</div>
+      <div class="ms-title">This month</div>
+      <div class="month-summary">
+        <div class="ms-item"><div class="ms-lbl">Income</div><div class="ms-val in" id="ms-income">+$0</div></div>
+        <div class="ms-item"><div class="ms-lbl">Expenses</div><div class="ms-val out" id="ms-expense">−$0</div></div>
+        <div class="ms-item"><div class="ms-lbl">Net saved</div><div class="ms-val" id="ms-net">$0</div></div>
+      </div>
+
+      <div class="section-h">Transactions</div>
+      <input class="tx-search" id="tx-search" type="text" placeholder="🔍  Search transactions…">
       <div id="home-tx"></div>
     </section>
 
@@ -241,11 +270,22 @@ canvas { display:block; width:100%; }
       <div class="bud-hero" id="day-hero">
         <div class="h-top">
           <span class="h-lbl">Left to spend today</span>
-          <button class="h-edit" id="set-daily-btn">Set</button>
+          <div class="bud-input hero-input"><span class="c">$</span><input type="number" id="lim-daily" min="0" step="1" placeholder="set"></div>
         </div>
         <div class="h-big" id="day-left">—</div>
         <div class="h-sub" id="day-sub">No daily budget set</div>
         <div class="h-bar"><div id="day-hero-bar" style="width:0%"></div></div>
+      </div>
+
+      <!-- cookie jar savings goal -->
+      <div class="bud-block">
+        <div class="b-head">
+          <span class="b-name">🍪 Cookie Jar</span>
+          <div class="bud-input"><span class="c" id="goal-cur">$</span><input type="number" id="goal-input" min="0" step="1" placeholder="goal"></div>
+        </div>
+        <div class="bar"><div class="bar-fill" id="jar-bar" style="width:0%"></div></div>
+        <div class="b-meta"><span id="jar-saved">—</span><span id="jar-left"></span></div>
+        <div class="jar-cookies" id="jar-cookies"></div>
       </div>
 
       <!-- weekly + monthly limits -->
@@ -328,7 +368,7 @@ canvas { display:block; width:100%; }
         <button class="set-btn danger" id="clear-btn">🗑 Clear everything</button>
         <input type="file" id="import-file" accept="application/json" style="display:none">
       </div>
-      <div class="muted" style="text-align:center; font-size:12px; margin-top:8px">CookiePot · data stays on this device</div>
+      <div class="muted" style="text-align:center; font-size:12px; margin-top:8px">CookiePot · v1.1 · data stays on this device</div>
     </section>
 
   </div><!-- /scroll -->
@@ -400,6 +440,7 @@ let state = {
   userName: "You",
   hideBalance: false,
   limits: { daily:0, weekly:0, monthly:0 },   // spending budgets you set
+  goal: 0,                                    // cookie jar savings target
 };
 
 let period = "week";
@@ -459,12 +500,32 @@ function totalBalance(){
 function renderHome(){
   $("home-name").textContent = (state.userName||"You").toUpperCase();
   const amt = totalBalance();
-  $("balance-amt").textContent = state.hideBalance ? "••••••" : fmt(amt);
-  $("hide-label").textContent = state.hideBalance ? "Show" : "Hide";
+  const hidden = state.hideBalance;
+  $("balance-amt").textContent = hidden ? "••••••" : fmt(amt);
+  $("hide-label").textContent = hidden ? "Show" : "Hide";
 
-  const recent = [...state.transactions].sort((a,b)=> b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,5);
-  $("home-tx").innerHTML = recent.length ? recent.map(t => txRow(t,"arrow")).join("") :
-    '<div class="empty">No transactions yet. Tap an action above or the + button.</div>';
+  // this-month summary
+  const mk = monthKeyOf(new Date());
+  let inc=0, exp=0;
+  state.transactions.forEach(t=>{ if(t.date.slice(0,7)===mk){ if(t.type==="income") inc+=t.amount; else exp+=t.amount; } });
+  const net = inc-exp;
+  $("ms-income").textContent  = hidden ? "••••" : "+"+fmt(inc);
+  $("ms-expense").textContent = hidden ? "••••" : "−"+fmt(exp);
+  $("ms-net").textContent     = hidden ? "••••" : (net<0?"−":"+")+fmt(Math.abs(net));
+  $("ms-net").style.color     = net<0 ? "var(--expense)" : "var(--income)";
+
+  // transaction list (search-aware)
+  const q = ($("tx-search").value||"").trim().toLowerCase();
+  let list = [...state.transactions].sort((a,b)=> b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+  if(q){
+    list = list.filter(t => (t.desc||"").toLowerCase().includes(q) || catById(t.category).name.toLowerCase().includes(q));
+    $("home-tx").innerHTML = list.length ? list.slice(0,50).map(t => txRow(t,"arrow")).join("") :
+      '<div class="empty">No transactions match "'+esc(q)+'".</div>';
+  } else {
+    const recent = list.slice(0,5);
+    $("home-tx").innerHTML = recent.length ? recent.map(t => txRow(t,"arrow")).join("") :
+      '<div class="empty">No transactions yet. Tap an action above or the + button.</div>';
+  }
 }
 function txRow(t, style){
   const c = catById(t.category);
@@ -497,6 +558,7 @@ function renderBudget(){
   // hero: today
   const sToday = spentToday();
   const hero = $("day-hero");
+  if(document.activeElement!==$("lim-daily")) $("lim-daily").value = lim.daily || "";
   if(lim.daily>0){
     const left = lim.daily - sToday;
     const over = left < 0;
@@ -505,13 +567,30 @@ function renderBudget(){
     $("day-sub").textContent = over ? `Over by ${fmt(-left)} · spent ${fmt(sToday)} of ${fmt(lim.daily)}`
                                     : `Spent ${fmt(sToday)} of ${fmt(lim.daily)} today`;
     $("day-hero-bar").style.width = Math.min(100,(sToday/lim.daily)*100)+"%";
-    $("set-daily-btn").textContent = "Edit";
   } else {
     hero.classList.remove("over");
     $("day-left").textContent = fmt(sToday);
-    $("day-sub").textContent = "spent today · tap Set to add a daily budget";
+    $("day-sub").textContent = "spent today · type a daily budget above";
     $("day-hero-bar").style.width = "0%";
-    $("set-daily-btn").textContent = "Set";
+  }
+
+  // cookie jar savings goal
+  const goal = +state.goal || 0;
+  const saved = Math.max(0, totalBalance());
+  $("goal-cur").textContent = state.currency;
+  if(document.activeElement!==$("goal-input")) $("goal-input").value = state.goal || "";
+  if(goal>0){
+    const pct = Math.min(100,(saved/goal)*100);
+    $("jar-bar").style.width = pct+"%";
+    $("jar-saved").textContent = `${fmt(saved)} of ${fmt(goal)}`;
+    $("jar-left").textContent = saved>=goal ? "Goal reached! 🎉" : `${fmt(goal-saved)} to go`;
+    const filled = Math.round(pct/10);
+    $("jar-cookies").innerHTML = "🍪".repeat(filled) + `<span class="dot">${"🍪".repeat(10-filled)}</span>`;
+  } else {
+    $("jar-bar").style.width = "0%";
+    $("jar-saved").textContent = `${fmt(saved)} saved`;
+    $("jar-left").textContent = "no goal set";
+    $("jar-cookies").innerHTML = "";
   }
 
   // weekly / monthly inputs + bars
@@ -707,7 +786,7 @@ function delTx(){ if(!editingId) return; if(!confirm("Delete this transaction?")
 /* ============ card sheet ============ */
 /* ============ data ============ */
 function exportData(){ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="ledger-backup-"+todayISO()+".json"; a.click(); URL.revokeObjectURL(url); }
-function importData(file){ const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!Array.isArray(d.transactions)) throw new Error("not a ledger backup"); state=Object.assign({transactions:[],budgets:{},currency:"$",theme:state.theme,userName:"You",hideBalance:false,limits:{daily:0,weekly:0,monthly:0}},d); save(); load(); refreshAll(); }catch(e){ alert("Could not import: "+e.message); } }; r.readAsText(file); }
+function importData(file){ const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!Array.isArray(d.transactions)) throw new Error("not a ledger backup"); state=Object.assign({transactions:[],budgets:{},currency:"$",theme:state.theme,userName:"You",hideBalance:false,limits:{daily:0,weekly:0,monthly:0},goal:0},d); save(); load(); refreshAll(); }catch(e){ alert("Could not import: "+e.message); } }; r.readAsText(file); }
 function seedSample(){
   if(state.transactions.length && !confirm("Add sample data to your current data?")) return;
   const now=new Date(), y=now.getFullYear(), m=now.getMonth();
@@ -740,7 +819,7 @@ function seedSample(){
   if(!state.limits.monthly) state.limits.monthly=1500;
   save(); refreshAll(); showScreen("budget");
 }
-function clearAll(){ if(!confirm("Delete ALL data? This cannot be undone.")) return; state.transactions=[]; state.budgets={}; state.limits={daily:0,weekly:0,monthly:0}; save(); refreshAll(); }
+function clearAll(){ if(!confirm("Delete ALL data? This cannot be undone.")) return; state.transactions=[]; state.budgets={}; state.limits={daily:0,weekly:0,monthly:0}; state.goal=0; save(); refreshAll(); }
 
 function refreshAll(){ renderHome(); renderBudget(); renderSettings(); if(document.getElementById("screen-analytics").classList.contains("active")) renderAnalytics(); }
 
@@ -762,12 +841,9 @@ function bind(){
 
   // card switches
   // budget: daily (hero) via prompt, weekly/monthly via inputs
-  $("set-daily-btn").onclick = ()=>{
-    const cur = state.limits.daily || "";
-    const v = prompt("Daily spending budget (how much you can spend per day):", cur);
-    if(v===null) return;
-    state.limits.daily = Math.max(0, parseFloat(v)||0); save(); renderBudget();
-  };
+  $("lim-daily").oninput = ()=>{ state.limits.daily = Math.max(0, parseFloat($("lim-daily").value)||0); save(); renderBudget(); };
+  $("goal-input").oninput = ()=>{ state.goal = Math.max(0, parseFloat($("goal-input").value)||0); save(); renderBudget(); };
+  $("tx-search").oninput = renderHome;
   $("lim-weekly").oninput  = ()=>{ state.limits.weekly  = Math.max(0, parseFloat($("lim-weekly").value)||0);  save(); renderBudget(); };
   $("lim-monthly").oninput = ()=>{ state.limits.monthly = Math.max(0, parseFloat($("lim-monthly").value)||0); save(); renderBudget(); };
   // per-category budget inputs
