@@ -117,6 +117,7 @@ body { background:var(--page); font-family:var(--font); color:var(--text); displ
 .hero-input input::placeholder { color:rgba(255,255,255,.7); }
 .hero-input:focus-within { border-color:#fff; }
 
+.bud-intro { font-size:13px; color:var(--muted); margin-bottom:18px; line-height:1.5; }
 .bud-block { border:1px solid var(--border); border-radius:18px; padding:16px 18px; margin-bottom:14px; }
 .bud-block .b-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:11px; }
 .bud-block .b-name { font-size:15px; font-weight:600; display:flex; align-items:center; gap:9px; }
@@ -131,9 +132,6 @@ body { background:var(--page); font-family:var(--font); color:var(--text); displ
 .b-meta .over { color:var(--expense); font-weight:600; }
 .cat-icon { width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; }
 .sub-h { font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin:24px 0 12px; }
-.mini-btn { background:var(--accent-soft); border:none; color:var(--accent); border-radius:14px; padding:7px 13px; font-family:var(--font); font-size:13px; font-weight:600; cursor:pointer; }
-.jar-cookies { font-size:16px; letter-spacing:3px; margin-top:9px; line-height:1; }
-.jar-cookies .dot { opacity:.25; }
 
 /* ================= ANALYTICS ================= */
 .chips { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:22px; }
@@ -266,6 +264,8 @@ canvas { display:block; width:100%; }
         <span style="width:42px"></span>
       </div>
 
+      <p class="bud-intro">Set your spending limits below. Expenses you add are counted against them automatically.</p>
+
       <!-- today's spending hero -->
       <div class="bud-hero" id="day-hero">
         <div class="h-top">
@@ -275,17 +275,6 @@ canvas { display:block; width:100%; }
         <div class="h-big" id="day-left">—</div>
         <div class="h-sub" id="day-sub">No daily budget set</div>
         <div class="h-bar"><div id="day-hero-bar" style="width:0%"></div></div>
-      </div>
-
-      <!-- cookie jar savings goal -->
-      <div class="bud-block">
-        <div class="b-head">
-          <span class="b-name">🍪 Cookie Jar</span>
-          <div class="bud-input"><span class="c" id="goal-cur">$</span><input type="number" id="goal-input" min="0" step="1" placeholder="goal"></div>
-        </div>
-        <div class="bar"><div class="bar-fill" id="jar-bar" style="width:0%"></div></div>
-        <div class="b-meta"><span id="jar-saved">—</span><span id="jar-left"></span></div>
-        <div class="jar-cookies" id="jar-cookies"></div>
       </div>
 
       <!-- weekly + monthly limits -->
@@ -306,10 +295,6 @@ canvas { display:block; width:100%; }
         <div class="bar"><div class="bar-fill" id="mo-bar" style="width:0%"></div></div>
         <div class="b-meta"><span id="mo-spent">spent</span><span id="mo-left">—</span></div>
       </div>
-
-      <!-- per-category budgets -->
-      <div class="sub-h">Category budgets (monthly)</div>
-      <div id="cat-budgets"></div>
     </section>
 
     <!-- ================= ANALYTICS ================= -->
@@ -410,19 +395,8 @@ canvas { display:block; width:100%; }
 /* ============ data ============ */
 const STORE_KEY = "ledger.v1";
 const CATEGORIES = [
-  { id:"salary",    name:"Salary",        icon:"💼", color:"#2fbf80", type:"income" },
-  { id:"transfer",  name:"Transfer",      icon:"💸", color:"#1c1c1c", type:"income" },
-  { id:"freelance", name:"Freelance",     icon:"🧑‍💻", color:"#22c3c3", type:"income" },
-  { id:"gift",      name:"Gifts",         icon:"🎁", color:"#9b8cf0", type:"income" },
-  { id:"other-in",  name:"Other income",  icon:"➕", color:"#34d399", type:"income" },
-  { id:"grocery",   name:"Grocery",       icon:"🛒", color:"#2fbf80", type:"expense" },
-  { id:"food",      name:"Food",          icon:"🍔", color:"#fb923c", type:"expense" },
-  { id:"rent",      name:"Rent & Bills",  icon:"🏠", color:"#60a5fa", type:"expense" },
-  { id:"transport", name:"Transport",     icon:"🚗", color:"#f472b6", type:"expense" },
-  { id:"shopping",  name:"Shopping",      icon:"🛍️", color:"#9b8cf0", type:"expense" },
-  { id:"fun",       name:"Entertainment", icon:"🎬", color:"#facc15", type:"expense" },
-  { id:"health",    name:"Health",        icon:"💊", color:"#ef6a6a", type:"expense" },
-  { id:"other-out", name:"Other expense", icon:"📦", color:"#94a3b8", type:"expense" },
+  { id:"savings", name:"Savings", icon:"🐷", color:"#2fbf80" },
+  { id:"others",  name:"Others",  icon:"📦", color:"#94a3b8" },
 ];
 
 const THEMES = {
@@ -574,33 +548,12 @@ function renderBudget(){
     $("day-hero-bar").style.width = "0%";
   }
 
-  // cookie jar savings goal
-  const goal = +state.goal || 0;
-  const saved = Math.max(0, totalBalance());
-  $("goal-cur").textContent = state.currency;
-  if(document.activeElement!==$("goal-input")) $("goal-input").value = state.goal || "";
-  if(goal>0){
-    const pct = Math.min(100,(saved/goal)*100);
-    $("jar-bar").style.width = pct+"%";
-    $("jar-saved").textContent = `${fmt(saved)} of ${fmt(goal)}`;
-    $("jar-left").textContent = saved>=goal ? "Goal reached! 🎉" : `${fmt(goal-saved)} to go`;
-    const filled = Math.round(pct/10);
-    $("jar-cookies").innerHTML = "🍪".repeat(filled) + `<span class="dot">${"🍪".repeat(10-filled)}</span>`;
-  } else {
-    $("jar-bar").style.width = "0%";
-    $("jar-saved").textContent = `${fmt(saved)} saved`;
-    $("jar-left").textContent = "no goal set";
-    $("jar-cookies").innerHTML = "";
-  }
-
   // weekly / monthly inputs + bars
   $("wk-cur").textContent = state.currency; $("mo-cur").textContent = state.currency;
   if(document.activeElement!==$("lim-weekly"))  $("lim-weekly").value  = lim.weekly  || "";
   if(document.activeElement!==$("lim-monthly")) $("lim-monthly").value = lim.monthly || "";
   fillBar("wk", spentThisWeek(),  lim.weekly);
   fillBar("mo", spentThisMonth(), lim.monthly);
-
-  renderCatBudgets();
 }
 function fillBar(prefix, spent, limit){
   const bar=$(prefix+"-bar"), meta=$(prefix+"-spent"), left=$(prefix+"-left");
@@ -615,25 +568,6 @@ function fillBar(prefix, spent, limit){
     meta.textContent=`${fmt(spent)} spent`; left.textContent="no limit"; left.className="";
   }
 }
-function renderCatBudgets(){
-  const cats = CATEGORIES.filter(c=>c.type==="expense");
-  const spent = {};
-  const k = monthKeyOf(new Date());
-  state.transactions.filter(t=>t.type==="expense"&&t.date.slice(0,7)===k).forEach(t=> spent[t.category]=(spent[t.category]||0)+t.amount);
-  $("cat-budgets").innerHTML = cats.map(c=>{
-    const limit=+state.budgets[c.id]||0, used=spent[c.id]||0;
-    const pct=limit>0?Math.min(100,(used/limit)*100):0, over=limit>0&&used>limit;
-    return `<div class="bud-block">
-      <div class="b-head">
-        <span class="b-name"><span class="cat-icon" style="background:${c.color}22;color:${c.color}">${c.icon}</span>${esc(c.name)}</span>
-        <div class="bud-input"><span class="c">${esc(state.currency)}</span><input type="number" min="0" step="1" data-cat="${c.id}" value="${limit||""}" placeholder="0"></div>
-      </div>
-      <div class="bar"><div class="bar-fill ${over?'over':''}" style="width:${pct}%;${limit>0?'':'opacity:.4'}"></div></div>
-      <div class="b-meta"><span>${fmt(used)} spent</span><span class="${over?'over':''}">${limit>0?(over?`over by ${fmt(used-limit)}`:`${fmt(limit-used)} left`):'no limit'}</span></div>
-    </div>`;
-  }).join("");
-}
-
 /* ============ ANALYTICS ============ */
 function startOfWeek(d){ const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0); return x; }
 function buildBuckets(){
@@ -759,7 +693,7 @@ function renderSettings(){
 }
 
 /* ============ transaction sheet ============ */
-function fillCats(){ $("f-category").innerHTML = CATEGORIES.filter(c=>c.type===formType).map(c=>`<option value="${c.id}">${c.icon} ${esc(c.name)}</option>`).join(""); }
+function fillCats(){ $("f-category").innerHTML = CATEGORIES.map(c=>`<option value="${c.id}">${c.icon} ${esc(c.name)}</option>`).join(""); }
 function openTx(tx, presetType){
   editingId = tx ? tx.id : null;
   formType = tx ? tx.type : (presetType||"expense");
@@ -842,30 +776,9 @@ function bind(){
   // card switches
   // budget: daily (hero) via prompt, weekly/monthly via inputs
   $("lim-daily").oninput = ()=>{ state.limits.daily = Math.max(0, parseFloat($("lim-daily").value)||0); save(); renderBudget(); };
-  $("goal-input").oninput = ()=>{ state.goal = Math.max(0, parseFloat($("goal-input").value)||0); save(); renderBudget(); };
   $("tx-search").oninput = renderHome;
   $("lim-weekly").oninput  = ()=>{ state.limits.weekly  = Math.max(0, parseFloat($("lim-weekly").value)||0);  save(); renderBudget(); };
   $("lim-monthly").oninput = ()=>{ state.limits.monthly = Math.max(0, parseFloat($("lim-monthly").value)||0); save(); renderBudget(); };
-  // per-category budget inputs
-  $("cat-budgets").addEventListener("input", (e)=>{
-    const inp = e.target.closest("input[data-cat]"); if(!inp) return;
-    const cid = inp.dataset.cat;
-    const v = parseFloat(inp.value);
-    if(v>0) state.budgets[cid]=v; else delete state.budgets[cid];
-    save();
-    // update just this row's bar + meta (keep focus in the field)
-    const limit=+state.budgets[cid]||0;
-    const k=monthKeyOf(new Date());
-    const used=state.transactions.filter(t=>t.type==="expense"&&t.category===cid&&t.date.slice(0,7)===k).reduce((s,t)=>s+t.amount,0);
-    const block=inp.closest(".bud-block");
-    const fill=block.querySelector(".bar-fill");
-    const meta=block.querySelector(".b-meta");
-    const pct=limit>0?Math.min(100,(used/limit)*100):0, over=limit>0&&used>limit;
-    fill.style.width=pct+"%"; fill.style.opacity=limit>0?"1":".4"; fill.classList.toggle("over",over);
-    meta.children[1].textContent = limit>0?(over?`over by ${fmt(used-limit)}`:`${fmt(limit-used)} left`):"no limit";
-    meta.children[1].className = over?"over":"";
-  });
-
   // analytics period
   $("period-chips").onclick = (e)=>{ const c=e.target.closest(".chip"); if(!c) return; period=c.dataset.p; document.querySelectorAll("#period-chips .chip").forEach(x=>x.classList.toggle("active",x===c)); renderAnalytics(); };
   // click a bar to select it
